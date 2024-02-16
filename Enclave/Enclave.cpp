@@ -36,11 +36,7 @@
 #include "Enclave.h"
 #include "Enclave_t.h"  /* print_string */
 
-// #include "converted.h"
-
 #include "SwiftInside-Swift.h"
-
-using namespace SwiftEnclave;
 
 /* 
  * printf: 
@@ -58,13 +54,6 @@ void printfInside(const char *fmt, ...)
 
 void printf_helloworld()
 {
-    printfInside("Hello World From Enclave\n");
-    auto printer = SwiftPrinter::init();
-    auto value = printer.printer();
-    
-    // auto value = printer();
-    // printfInside(value);
-
-    // printer();
-
+    auto value = SwiftEnclave::printer();
+    printfInside("%d\n", value);
 }

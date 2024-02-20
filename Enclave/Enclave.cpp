@@ -52,8 +52,11 @@ void printfInside(const char *fmt, ...)
     ocall_print_string(buf);
 }
 
-void printf_helloworld()
-{
+void printf_helloworld() {
     auto value = SwiftEnclave::printer();
+    sgx_print(value);
+}
+
+void sgx_print(const int value) {
     printfInside("%d\n", value);
 }

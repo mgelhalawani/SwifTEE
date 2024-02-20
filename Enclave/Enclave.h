@@ -43,6 +43,8 @@ extern "C" {
 void printfInside(const char *fmt, ...);
 void printf_helloworld();
 
+void sgx_print(const int value);
+
 #if defined(__cplusplus)
 }
 #endif

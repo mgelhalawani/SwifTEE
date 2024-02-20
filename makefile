@@ -229,9 +229,11 @@ $(App_Name): App/Enclave_u.o $(App_Cpp_Objects)
 
 ######## Enclave Objects ########
 
-Enclave/converted.o: Enclave/converted.c
-#	@$(CC) $(Enclave_C_Flags) -c $< -o $@
-#	g++ $(Enclave_C_Flags) -c $< -o $@
+#lib/libenclave.a: Enclave/SwiftEnclave.o App/App.o Enclave/Enclave.o
+#	@echo "making library"
+#	gcc -shared -o lib/libsgxw.so Enclave/Enclave.o App/App.o
+#	ar -rsc lib/libsgxw.a Enclave/SwiftEnclave.o App/Enclave_u.o $(App_Cpp_Objects) Enclave/Enclave_t.o $(Enclave_Cpp_Objects)
+#	ranlib lib/libsgxw.a
 
 Enclave/SwiftEnclave.o: Enclave/SwiftEnclave.swift
 	swiftc -parse-as-library -c $^ \
@@ -241,6 +243,8 @@ Enclave/SwiftEnclave.o: Enclave/SwiftEnclave.swift
 		-color-diagnostics \
 		-Xcc -fPIC \
 		-avoid-emit-module-source-info
+#		-L lib/ \
+#		-l sgxw 
 
 Enclave/Enclave_t.c: Enclave/SwiftEnclave.o $(SGX_EDGER8R) Enclave/Enclave.edl
 	@cd Enclave && $(SGX_EDGER8R) --trusted ../Enclave/Enclave.edl --search-path ../Enclave --search-path $(SGX_SDK)/include
@@ -264,15 +268,6 @@ Enclave/%.o: Enclave/%.cpp
 		-fdata-sections \
 		-fstack-protector \
 		-std=c++11 
-
-#	g++ -m64 -c -fPIC $^ -o $@ \
-		-IInclude -IEnclave -I$(SGX_SDK)/include \
-		-fvisibility=hidden \
-		-fpie \
-		-ffunction-sections \
-		-fdata-sections \
-		-fstack-protector \
-		-std=c++11 
 		
 	@echo "CXX  <=  $^"
 
@@ -281,6 +276,34 @@ $(Enclave_Name): Enclave/SwiftEnclave.o Enclave/Enclave_t.o $(Enclave_Cpp_Object
 	@$(CXX) $^ -o $@ -L/home/mainuser/Documents/swift-5.9.1-RELEASE-ubuntu22.04/usr/lib \
 		-Wl,--start-group -lswiftDemangle -lIndexStore -llldb -lLTO -Wl,--end-group \
 		/home/mainuser/Documents/swift-5.9.1-RELEASE-ubuntu22.04/usr/lib/swift/linux/*.so \
+		$(Enclave_Link_Flags)
+
+#	clang $^ -o $@ \
+		-I/home/mainuser/Documents/swift-5.9.1-RELEASE-ubuntu22.04/usr/lib/swift/linux/ \
+		-I./Enclave/ \
+		-L/home/mainuser/Documents/swift-5.9.1-RELEASE-ubuntu22.04/usr/lib \
+		-Wl,--start-group -lswiftDemangle -lIndexStore -llldb -lLTO -Wl,--end-group \
+		-L/home/mainuser/Documents/swift-5.9.1-RELEASE-ubuntu22.04/usr/lib/swift/linux/ \
+		-lswiftDispatch \
+		-lBlocksRuntime \
+		-lswiftDistributed \
+		-ldispatch \
+		-lswiftCore \
+		-lswift_Backtracing \
+		-lswift_Concurrency \
+		-l_InternalSwiftStaticMirror \
+		-lswiftRegexBuilder \
+		-lFoundationNetworking \
+		-lswift_RegexParser \
+		-lswiftGlibc \
+		-lFoundationXML \
+		-lswift_Differentiation \
+		-lswiftSwiftOnoneSupport \
+		-lswiftRemoteMirror \
+		-lswift_StringProcessing \
+		-lFoundation \
+		-lswiftCxx \
+		-lswiftCxxStdlib \
 		$(Enclave_Link_Flags)
 
 	@echo "Files => $^"
@@ -327,8 +350,10 @@ swiftc: lib/libsgxw.a
 clean:
 	@rm -f .config_* $(App_Name) $(Enclave_Name) $(Signed_Enclave_Name) \
 		$(App_Cpp_Objects) App/Enclave_u.* $(Enclave_Cpp_Objects) Enclave/Enclave_t.* \
-		lib/libsgxw.a caller caller.o lib/libsgxw.so \
+		caller caller.o \
 		Enclave/SwiftInside-Swift.h Enclave/SwiftEnclave.o \
 		Enclave/SwiftEnclave.autolink Enclave/SwiftEnclave.swiftdoc \
-		Enclave/SwiftEnclave.swiftmodule Enclave/converted.o
+		Enclave/SwiftEnclave.swiftmodule Enclave/converted.o \
+		enclave.signed.so lib/*
+
 

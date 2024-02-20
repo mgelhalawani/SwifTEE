@@ -11,3 +11,6 @@ Enclave/SwiftEnclave.autolink
 Enclave/SwiftEnclave.o
 Enclave/SwiftInside-Swift.h
 enclave.so
+caller
+enclave.signed.so
+lib/

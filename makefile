@@ -235,13 +235,10 @@ Enclave/Enclave_t.c: $(SGX_EDGER8R) Enclave/Enclave.edl
 
 Enclave/Enclave_t.o: Enclave/Enclave_t.c 
 	@$(CC) $(Enclave_C_Flags) -c $< -o $@
-#	g++ $(Enclave_C_Flags) -c $< -o $@
 	@echo "CC   <=  $<"
 
 Enclave/%.o: Enclave/%.cpp
 	@echo "C++ => $(CXX) "
-#	clang $(Enclave_Cpp_Flags) -c $< -o $@
-#	@$(CXX) $(Enclave_Cpp_Flags) -c $< -o $@
 
 	clang -m64 -c -fPIC $< -o $@ \
 		-IInclude -IEnclave -I$(SGX_SDK)/include \
@@ -285,36 +282,7 @@ $(Enclave_Name): Enclave/SwiftEnclave.o Enclave/Enclave_t.o Enclave/interface.o 
 		/home/mainuser/Documents/swift-5.9.1-RELEASE-ubuntu22.04/usr/lib/swift/linux/*.so \
 		$(Enclave_Link_Flags)
 
-#	clang $^ -o $@ \
-		-I/home/mainuser/Documents/swift-5.9.1-RELEASE-ubuntu22.04/usr/lib/swift/linux/ \
-		-I./Enclave/ \
-		-L/home/mainuser/Documents/swift-5.9.1-RELEASE-ubuntu22.04/usr/lib \
-		-Wl,--start-group -lswiftDemangle -lIndexStore -llldb -lLTO -Wl,--end-group \
-		-L/home/mainuser/Documents/swift-5.9.1-RELEASE-ubuntu22.04/usr/lib/swift/linux/ \
-		-lswiftDispatch \
-		-lBlocksRuntime \
-		-lswiftDistributed \
-		-ldispatch \
-		-lswiftCore \
-		-lswift_Backtracing \
-		-lswift_Concurrency \
-		-l_InternalSwiftStaticMirror \
-		-lswiftRegexBuilder \
-		-lFoundationNetworking \
-		-lswift_RegexParser \
-		-lswiftGlibc \
-		-lFoundationXML \
-		-lswift_Differentiation \
-		-lswiftSwiftOnoneSupport \
-		-lswiftRemoteMirror \
-		-lswift_StringProcessing \
-		-lFoundation \
-		-lswiftCxx \
-		-lswiftCxxStdlib \
-		$(Enclave_Link_Flags)
-
 	@echo "Files => $^"
-#	@$(CXX) $^ -o $@ $(Enclave_Link_Flags)
 	@echo "LINK =>  $@"
 
 $(Signed_Enclave_Name): $(Enclave_Name)
@@ -323,7 +291,6 @@ $(Signed_Enclave_Name): $(Enclave_Name)
 
 lib/libsgxw.a: Enclave/SwiftEnclave.o App/App.o Enclave/Enclave.o
 	@echo "making library"
-#	gcc -shared -o lib/libsgxw.so Enclave/Enclave.o App/App.o
 	ar -rsc lib/libsgxw.a Enclave/SwiftEnclave.o App/Enclave_u.o $(App_Cpp_Objects) Enclave/Enclave_t.o $(Enclave_Cpp_Objects) Enclave/interface.o 
 	ranlib lib/libsgxw.a
 	

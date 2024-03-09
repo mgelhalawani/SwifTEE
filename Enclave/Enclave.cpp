@@ -36,7 +36,16 @@
 #include "Enclave.h"
 #include "Enclave_t.h"  /* print_string */
 
-#include "SwiftInside-Swift.h"
+#include "interface.h"
+
+void printf_helloworld() {
+    int value = interface_printf_helloworld();
+    sgx_print(value);
+}
+
+void sgx_print(const int value) {
+    printfInside("%d\n", value);
+}
 
 /* 
  * printf: 
@@ -50,13 +59,4 @@ void printfInside(const char *fmt, ...)
     vsnprintf(buf, BUFSIZ, fmt, ap);
     va_end(ap);
     ocall_print_string(buf);
-}
-
-void printf_helloworld() {
-    auto value = SwiftEnclave::printer();
-    sgx_print(value);
-}
-
-void sgx_print(const int value) {
-    printfInside("%d\n", value);
 }

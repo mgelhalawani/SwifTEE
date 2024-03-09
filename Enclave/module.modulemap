@@ -1,0 +1,4 @@
+module ENCI {
+    header "Enclave.h"
+    export *
+}

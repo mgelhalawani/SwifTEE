@@ -229,24 +229,7 @@ $(App_Name): App/Enclave_u.o $(App_Cpp_Objects)
 
 ######## Enclave Objects ########
 
-#lib/libenclave.a: Enclave/SwiftEnclave.o App/App.o Enclave/Enclave.o
-#	@echo "making library"
-#	gcc -shared -o lib/libsgxw.so Enclave/Enclave.o App/App.o
-#	ar -rsc lib/libsgxw.a Enclave/SwiftEnclave.o App/Enclave_u.o $(App_Cpp_Objects) Enclave/Enclave_t.o $(Enclave_Cpp_Objects)
-#	ranlib lib/libsgxw.a
-
-Enclave/SwiftEnclave.o: Enclave/SwiftEnclave.swift
-	swiftc -parse-as-library -c $^ \
-		-cxx-interoperability-mode=default \
-    	-emit-clang-header-path Enclave/SwiftInside-Swift.h \
-		-o Enclave/SwiftEnclave.o \
-		-color-diagnostics \
-		-Xcc -fPIC \
-		-avoid-emit-module-source-info
-#		-L lib/ \
-#		-l sgxw 
-
-Enclave/Enclave_t.c: Enclave/SwiftEnclave.o $(SGX_EDGER8R) Enclave/Enclave.edl
+Enclave/Enclave_t.c: $(SGX_EDGER8R) Enclave/Enclave.edl
 	@cd Enclave && $(SGX_EDGER8R) --trusted ../Enclave/Enclave.edl --search-path ../Enclave --search-path $(SGX_SDK)/include
 	@echo "GEN  =>  $@"
 
@@ -271,7 +254,31 @@ Enclave/%.o: Enclave/%.cpp
 		
 	@echo "CXX  <=  $^"
 
-$(Enclave_Name): Enclave/SwiftEnclave.o Enclave/Enclave_t.o $(Enclave_Cpp_Objects) # Enclave/converted.o 
+lib/libenci.a: Enclave/Enclave_t.o $(Enclave_Cpp_Objects)
+	@echo "making ENCI library"
+	ar -rsc lib/libenci.a Enclave/Enclave_t.o $(Enclave_Cpp_Objects)
+	ranlib lib/libenci.a
+
+Enclave/SwiftEnclave.o: Enclave/SwiftEnclave.swift lib/libenci.a
+	swiftc -parse-as-library -c Enclave/SwiftEnclave.swift \
+		-cxx-interoperability-mode=default \
+    	-emit-clang-header-path Enclave/SwiftInside-Swift.h \
+		-o Enclave/SwiftEnclave.o \
+		-color-diagnostics \
+		-Xcc -fPIC \
+		-avoid-emit-module-source-info \
+		-L ../lib/ \
+		-l enci \
+		-Xcc -I -Xcc Enclave/ \
+		-g \
+		-swift-version 5 \
+		-Onone
+
+Enclave/interface.o: Enclave/interface.cpp 
+	clang -m64 -c -fPIC -c $< -o $@
+	@echo "$(CXX) <= $<"
+
+$(Enclave_Name): Enclave/SwiftEnclave.o Enclave/Enclave_t.o Enclave/interface.o $(Enclave_Cpp_Objects) 
 	@echo "creating encalve..."
 	@$(CXX) $^ -o $@ -L/home/mainuser/Documents/swift-5.9.1-RELEASE-ubuntu22.04/usr/lib \
 		-Wl,--start-group -lswiftDemangle -lIndexStore -llldb -lLTO -Wl,--end-group \
@@ -317,7 +324,7 @@ $(Signed_Enclave_Name): $(Enclave_Name)
 lib/libsgxw.a: Enclave/SwiftEnclave.o App/App.o Enclave/Enclave.o
 	@echo "making library"
 #	gcc -shared -o lib/libsgxw.so Enclave/Enclave.o App/App.o
-	ar -rsc lib/libsgxw.a Enclave/SwiftEnclave.o App/Enclave_u.o $(App_Cpp_Objects) Enclave/Enclave_t.o $(Enclave_Cpp_Objects)
+	ar -rsc lib/libsgxw.a Enclave/SwiftEnclave.o App/Enclave_u.o $(App_Cpp_Objects) Enclave/Enclave_t.o $(Enclave_Cpp_Objects) Enclave/interface.o 
 	ranlib lib/libsgxw.a
 	
 swiftc: lib/libsgxw.a
@@ -354,6 +361,6 @@ clean:
 		Enclave/SwiftInside-Swift.h Enclave/SwiftEnclave.o \
 		Enclave/SwiftEnclave.autolink Enclave/SwiftEnclave.swiftdoc \
 		Enclave/SwiftEnclave.swiftmodule Enclave/converted.o \
-		enclave.signed.so lib/*
+		enclave.signed.so lib/* Enclave/interface.o
 
 

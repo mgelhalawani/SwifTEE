@@ -4,10 +4,21 @@ import SGXW
 struct MainRunner {
 
     func main() {
-        print("in main")
-        runProcess()
-        print("Done")
+        print("Starting Application...")
+
+        let output = initialize_enclave()
+        if output < 0 {
+            print("Unalbe to create enclave")
+            return
+        }
+        
+        call_printf()
+
+        destroy()
+
+        print("Application Ended")
     }
+    
 }
 
 

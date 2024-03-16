@@ -149,12 +149,26 @@ void print_error_message(sgx_status_t ret)
     	printf("Error code is 0x%X. Please refer to the \"Intel SGX SDK Developer Reference\" for more details.\n", ret);
 }
 
+int initialize_enclave(void)
+{
+    sgx_status_t ret = SGX_ERROR_UNEXPECTED;
+    
+    /* Call sgx_create_enclave to initialize an enclave instance */
+    /* Debug Support: set 2nd parameter to 1 */
+    ret = sgx_create_enclave(ENCLAVE_FILENAME, SGX_DEBUG_FLAG, NULL, NULL, &global_eid, NULL);
+    if (ret != SGX_SUCCESS) {
+        print_error_message(ret);
+        return -1;
+    }
+
+    return 0;
+}
 /* Initialize the enclave:
  *   Step 1: try to retrieve the launch token saved by last transaction
  *   Step 2: call sgx_create_enclave to initialize an enclave instance
  *   Step 3: save the launch token if it is updated
  */
-int initialize_enclave(void)
+int other_initialize_enclave(void)
 {
     char token_path[MAX_PATH] = {'\0'};
     sgx_launch_token_t token = {0};
@@ -242,6 +256,14 @@ int runProcess()
     sgx_destroy_enclave(global_eid);
     
     return 0;
+}
+
+void call_printf() {
+    printf_helloworld(global_eid);
+}
+
+void destroy() {
+    sgx_destroy_enclave(global_eid);
 }
 
 /* Application entry 

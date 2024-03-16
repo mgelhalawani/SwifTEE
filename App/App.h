@@ -60,6 +60,10 @@ extern "C" {
 
 extern int runProcess();
 
+int initialize_enclave(void);
+void call_printf();
+void destroy();
+
 #if defined(__cplusplus)
 }
 #endif

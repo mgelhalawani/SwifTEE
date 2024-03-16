@@ -2,7 +2,7 @@ import Foundation
 import ENCI
 
 public func printer() -> Int {
-    let str = 09876543
-    sgx_print(532167)
+    let str = 098765
+    sgx_print(5321)
     return str
 }

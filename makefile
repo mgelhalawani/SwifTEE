@@ -302,8 +302,8 @@ swiftc: lib/libsgxw.a
 		-Xcc -I -Xcc App/ \
 		-Xcc -I -Xcc Enclave/ \
 		-L /home/mainuser/Documents/sgxsdk/sdk_libs/ \
-		-Xcc -I -Xcc /home/mainuser/Documents/sgxsdk/include \
 		-l$(Urts_Library_Name) \
+		-Xcc -I -Xcc /home/mainuser/Documents/sgxsdk/include \
 		-o caller \
 		-DDEBUG \
 		-experimental-skip-non-inlinable-function-bodies-without-types \
@@ -314,7 +314,7 @@ swiftc: lib/libsgxw.a
 		-Onone \
 		-D SWIFT_PACKAGE \
 		-D DEBUG \
-		-Xcc -fmodule-map-file=/home/mainuser/Documents/ProjectCode/CSGX/App/module.modulemap \
+		-Xcc -fmodule-map-file=/home/mainuser/Documents/ProjectCode/SwifTee/App/module.modulemap \
 		-Xcc -fmodule-map-file=/usr/lib/gcc/x86_64-linux-gnu/11/../../../../include/c++/11/module.modulemap \
 		-Xcc -fPIC \
 		-cxx-interoperability-mode=default

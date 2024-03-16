@@ -295,7 +295,7 @@ lib/libsgxw.a: Enclave/SwiftEnclave.o App/App.o Enclave/Enclave.o
 	ranlib lib/libsgxw.a
 	
 swiftc: lib/libsgxw.a
-	swiftc Swift/caller.swift \
+	swiftc Swift/main.swift \
 		-emit-executable \
 		-L lib/ \
 		-l sgxw \
@@ -304,7 +304,7 @@ swiftc: lib/libsgxw.a
 		-L /home/mainuser/Documents/sgxsdk/sdk_libs/ \
 		-l$(Urts_Library_Name) \
 		-Xcc -I -Xcc /home/mainuser/Documents/sgxsdk/include \
-		-o caller \
+		-o main \
 		-DDEBUG \
 		-experimental-skip-non-inlinable-function-bodies-without-types \
 		-target x86_64-unknown-linux-gnu \
@@ -324,7 +324,7 @@ swiftc: lib/libsgxw.a
 clean:
 	@rm -f .config_* $(App_Name) $(Enclave_Name) $(Signed_Enclave_Name) \
 		$(App_Cpp_Objects) App/Enclave_u.* $(Enclave_Cpp_Objects) Enclave/Enclave_t.* \
-		caller caller.o \
+		main main.o \
 		Enclave/SwiftInside-Swift.h Enclave/SwiftEnclave.o \
 		Enclave/SwiftEnclave.autolink Enclave/SwiftEnclave.swiftdoc \
 		Enclave/SwiftEnclave.swiftmodule Enclave/converted.o \

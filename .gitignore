@@ -5,7 +5,7 @@ Enclave/Enclave_t.c
 Enclave/Enclave_t.h
 Enclave/SwiftEnclave.autolink
 Enclave/SwiftInside-Swift.h
-caller
+main
 lib/
 Enclave/*.o
 App/*.o

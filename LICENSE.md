@@ -1,4 +1,3 @@
-/*
 MIT License
 
 Copyright (c) [2024] [mgelhalawani]
@@ -20,31 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-*/
-
-import Foundation
-import SGXW
-
-struct MainRunner {
-
-    func main() {
-        print("Starting Application...")
-
-        let output = initialize_enclave()
-        if output < 0 {
-            print("Unalbe to create enclave")
-            return
-        }
-        
-        call_printf()
-
-        destroy()
-
-        print("Application Ended")
-    }
-    
-}
-
-
-let runner = MainRunner()
-runner.main()

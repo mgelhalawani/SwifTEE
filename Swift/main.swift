@@ -30,14 +30,18 @@ struct MainRunner {
     func main() {
         print("Starting Application...")
 
+        // asking the SDK to initialize the enclave
+        // aborting if in case it fails
         let output = initialize_enclave()
         if output < 0 {
             print("Unalbe to create enclave")
             return
         }
         
+        // calling the trusted function (ECALL)
         call_printf()
 
+        // destroying the enclave once no longer needed
         destroy()
 
         print("Application Ended")

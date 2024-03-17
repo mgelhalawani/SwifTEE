@@ -23,10 +23,10 @@ SOFTWARE.
 */
 
 import Foundation
-import ENCI
+import PLATINT
 
 public func printer() -> Int {
-    let str = 098765
-    sgx_print(5321)
+    let str = 0
+    sgx_print(1)
     return str
 }

@@ -251,12 +251,12 @@ Enclave/%.o: Enclave/%.cpp
 		
 	@echo "CXX  <=  $^"
 
-lib/libenci.a: Enclave/Enclave_t.o $(Enclave_Cpp_Objects)
-	@echo "making ENCI library"
-	ar -rsc lib/libenci.a Enclave/Enclave_t.o $(Enclave_Cpp_Objects)
-	ranlib lib/libenci.a
+lib/libplatint.a: Enclave/Enclave_t.o $(Enclave_Cpp_Objects)
+	@echo "making platint library"
+	ar -rsc lib/libplatint.a Enclave/Enclave_t.o $(Enclave_Cpp_Objects)
+	ranlib lib/libplatint.a
 
-Enclave/SwiftEnclave.o: Enclave/SwiftEnclave.swift lib/libenci.a
+Enclave/SwiftEnclave.o: Enclave/SwiftEnclave.swift lib/libplatint.a
 	swiftc -parse-as-library -c Enclave/SwiftEnclave.swift \
 		-cxx-interoperability-mode=default \
     	-emit-clang-header-path Enclave/SwiftInside-Swift.h \
@@ -265,7 +265,7 @@ Enclave/SwiftEnclave.o: Enclave/SwiftEnclave.swift lib/libenci.a
 		-Xcc -fPIC \
 		-avoid-emit-module-source-info \
 		-L ../lib/ \
-		-l enci \
+		-l platint \
 		-Xcc -I -Xcc Enclave/ \
 		-g \
 		-swift-version 5 \

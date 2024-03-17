@@ -1,4 +1,4 @@
-module ENCI {
+module PLATINT {
     header "Enclave.h"
     export *
 }

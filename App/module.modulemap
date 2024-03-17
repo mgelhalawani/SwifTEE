@@ -1,4 +1,4 @@
-module SGXW {
+module SGXINT {
     header "App.h"
     export *
 }

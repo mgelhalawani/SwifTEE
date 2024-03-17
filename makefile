@@ -185,7 +185,7 @@ all: .config_$(Build_Mode)_$(SGX_ARCH) $(App_Name) $(Enclave_Name)
 	@echo "You can also sign the enclave using an external signing tool."
 	@echo "To build the project in simulation mode set SGX_MODE=SIM. To build the project in prerelease mode set SGX_PRERELEASE=1 and SGX_MODE=HW."
 else
-all: .config_$(Build_Mode)_$(SGX_ARCH) $(App_Name) $(Signed_Enclave_Name) lib/libsgxw.a swiftc
+all: .config_$(Build_Mode)_$(SGX_ARCH) $(App_Name) $(Signed_Enclave_Name) lib/libsgxint.a swiftc
 ifeq ($(Build_Mode), HW_DEBUG)
 	@echo "The project has been built in debug hardware mode."
 else ifeq ($(Build_Mode), SIM_DEBUG)
@@ -289,16 +289,16 @@ $(Signed_Enclave_Name): $(Enclave_Name)
 	@$(SGX_ENCLAVE_SIGNER) sign -key Enclave/Enclave_private.pem -enclave $(Enclave_Name) -out $@ -config $(Enclave_Config_File)
 	@echo "SIGN =>  $@"
 
-lib/libsgxw.a: Enclave/SwiftEnclave.o App/App.o Enclave/Enclave.o
+lib/libsgxint.a: Enclave/SwiftEnclave.o App/App.o Enclave/Enclave.o
 	@echo "making library"
-	ar -rsc lib/libsgxw.a Enclave/SwiftEnclave.o App/Enclave_u.o $(App_Cpp_Objects) Enclave/Enclave_t.o $(Enclave_Cpp_Objects) Enclave/interface.o 
-	ranlib lib/libsgxw.a
+	ar -rsc lib/libsgxint.a Enclave/SwiftEnclave.o App/Enclave_u.o $(App_Cpp_Objects) Enclave/Enclave_t.o $(Enclave_Cpp_Objects) Enclave/interface.o 
+	ranlib lib/libsgxint.a
 	
-swiftc: lib/libsgxw.a
+swiftc: lib/libsgxint.a
 	swiftc Swift/main.swift \
 		-emit-executable \
 		-L lib/ \
-		-l sgxw \
+		-l sgxint \
 		-Xcc -I -Xcc App/ \
 		-Xcc -I -Xcc Enclave/ \
 		-L /home/mainuser/Documents/sgxsdk/sdk_libs/ \
